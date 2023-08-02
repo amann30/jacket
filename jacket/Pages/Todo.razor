@@ -1,0 +1,138 @@
+﻿@page "/todo"
+@using jacket.Data;
+
+
+<h5 style="font-weight:500;">Uncompleted Tasks (@todos.Count(s => !s.IsDone))</h5>
+
+<ul>
+    @foreach (var todo in todos.Where(s => !s.IsDone))
+    {
+        <li>
+            <input type="checkbox" @bind="todo.IsDone" disabled="true" />
+            <label for="Title">@todo.Title</label>
+        </li>
+    }
+</ul>
+
+<h5 style="font-weight:500">Completed Tasks (@todos.Count(s => s.IsDone))</h5>
+
+<ul>
+    @foreach (var todo in todos.Where(s => s.IsDone))
+    {
+        <li>
+            <input type="checkbox" @bind="todo.IsDone" />
+            @todo.Title
+        </li>
+    }
+</ul>
+
+<div style="align-content:center; margin:10px; padding:40px; background-color:whitesmoke">
+    <div class="mb-3">
+        <label class="form-label">Task Description</label>
+        @* <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" @bind="newTodo"></textarea>*@
+        <input type="text" class="form-control" placeholder="Task Name" @bind="newTodo" style="max-width:400px" />
+        @if (isDivVisible)
+        {
+            <div>
+                <label for="required" style="color:red; margin-left:15px">@message</label>
+            </div>
+        }
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" @bind="isChecked" class="form-check-input" />
+
+        <label class="form-check-label" for="flexCheckDefault">
+            Status
+        </label>
+    </div>
+    <br />
+    <MudButton Disabled="@_processing" OnClick="ProcessSomething" Variant="Variant.Filled" Color="Color.Primary">
+        @if (_processing)
+        {
+            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            <MudText Class="ms-2">Processing</MudText>
+        }
+        else
+        {
+            <MudText>Add Task</MudText>
+        }
+    </MudButton>
+    @* <button @onclick="AddTodo" style="width:120px" class="btn btn-primary" type="submit">Add Task</button>*@
+
+</div>
+
+
+@code {
+    private List<TodoItem> todos = new();
+    private string? newTodo;
+    private bool isChecked;
+    private string? message { get; set; }
+    private bool isDivVisible = false;
+   
+
+    private void AddTodo()
+    {
+        if (string.IsNullOrWhiteSpace(newTodo))
+        {
+            message = "Enter a task.";
+            isDivVisible = true;
+            return;
+        }
+
+        if (todos.Count > 0)
+        {
+            foreach (var item in todos)
+            {
+                if (item.Title!.Trim() == newTodo.Trim())
+                {
+                    message = "Already Inserted";
+                    isDivVisible = true;
+                    return;
+                }
+            }
+        }
+
+
+        todos.Add(new TodoItem { Title = newTodo, IsDone = isChecked });
+        newTodo = string.Empty;
+        isChecked = false;
+        isDivVisible = false;
+    }
+
+   
+    private bool _processing = false;
+
+    async Task ProcessSomething()
+    {
+        if (string.IsNullOrWhiteSpace(newTodo))
+        {
+            message = "Enter a task.";
+            isDivVisible = true;
+            return;
+        }
+
+        if (todos.Count > 0)
+        {
+            foreach (var item in todos)
+            {
+                if (item.Title!.Trim() == newTodo.Trim())
+                {
+                    message = "Already Inserted";
+                    isDivVisible = true;
+                    return;
+                }
+            }
+        }
+
+
+        todos.Add(new TodoItem { Title = newTodo, IsDone = isChecked });
+        newTodo = string.Empty;
+        isChecked = false;
+        isDivVisible = false;
+
+        _processing = true;
+        await Task.Delay(1000);
+        _processing = false;
+    }
+}

@@ -1,0 +1,90 @@
+﻿@page "/sikha"
+
+<div>
+    <MudButton Href="https://github.com/MudBlazor/MudBlazor"
+               Target="_blank"
+               Variant="Variant.Filled"
+               StartIcon="@Icons.Custom.Brands.GitHub"
+               Color="Color.Primary"
+               Disabled=@disabled>
+        GitHub Link
+    </MudButton>
+    <MudButton Href="https://github.com/MudBlazor/MudBlazor"
+               Target="_blank"
+               Variant="Variant.Text"
+               EndIcon="@Icons.Custom.Brands.GitHub"
+               Color="Color.Secondary"
+               Style="text-transform:none"
+               Disabled=@disabled>
+        GitHub Link
+    </MudButton>
+    <MudButton Href="https://github.com/MudBlazor/MudBlazor"
+               Target="_blank"
+               Variant="Variant.Outlined"
+               EndIcon="@Icons.Custom.Brands.GitHub"
+               Color="Color.Tertiary"
+               Disabled=@disabled Size="Size.Medium">
+        GitHub Link
+    </MudButton>
+    <br />
+    <MudSwitch Color="Color.Primary" @bind-Checked=@(disabled) Label="Disable" />
+</div>
+
+<div>
+    @if (showLeaveAlert)
+    {
+        <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(true))">Time to leave. Please close me!</MudAlert>
+    }
+    @if (showCallAlert)
+    {
+        <MudAlert Severity="Severity.Success" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Time to call. Please close me!</MudAlert>
+    }
+    @if (!showLeaveAlert && !showCallAlert)
+    {
+        <div style="display: flex; justify-content: center;" class="mt-6">
+            <MudButton @onclick="ShowAlerts" Variant="Variant.Filled" Color="Color.Primary">Show Alerts</MudButton>
+        </div>
+    }
+
+</div>
+
+
+
+<div>
+    <MudToggleIconButton @bind-Toggled="@AlarmOn"
+                         Icon="@Icons.Material.Filled.AlarmOff" Color="@Color.Error" Title="Off"
+                         ToggledIcon="@Icons.Material.Filled.AlarmOn" ToggledColor="@Color.Success" ToggledTitle="On" />
+
+    <span>Alarm is @(AlarmOn ? "On" : "Off")</span>
+</div>
+
+
+@code {
+    public bool AlarmOn { get; set; }
+}
+
+@code {
+    private bool showCallAlert = true;
+    private bool showLeaveAlert = true;
+
+    private void CloseMe(bool value)
+    {
+        if (value)
+        {
+            showLeaveAlert = false;
+        }
+        else
+        {
+            showCallAlert = false;
+        }
+    }
+
+    private void ShowAlerts()
+    {
+        showCallAlert = true;
+        showLeaveAlert = true;
+    }
+
+    bool disabled = false;
+}
+

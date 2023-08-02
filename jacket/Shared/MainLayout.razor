@@ -1,0 +1,107 @@
+﻿@*@inherits LayoutComponentBase
+@using MudBlazor
+
+<PageTitle>jacket</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+*@
+
+@inherits LayoutComponentBase
+@using System.Timers
+
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer></MudSpacer>
+        <MudText Label=@currentDate ReadOnly="true" Variant="Variant.Text" />
+        <p style="font-family:'Cascadia Mono'; font-weight:bolder; margin:30px;">Current datetime:  @currentDate</p>
+        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode"></MudSwitch>
+        <MudAvatar Color="Color.Tertiary" Size="Size.Medium">
+            <MudButton OnClick="@(() => Rename())">@_buttonName</MudButton>
+        </MudAvatar>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen">
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Medium" Style="margin:10px">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
+
+    private string _buttonName = "A";
+
+    void Rename()
+    {
+        char currentChar = _buttonName[0];
+
+        if (currentChar == 'Z')
+        {
+            _buttonName = "A";
+        }
+        else
+        {
+            _buttonName = ((char)(currentChar + 1)).ToString();
+        }
+    }
+
+    private DateTime currentDate = DateTime.Now;
+
+    private Timer timer = null!;
+
+    protected override void OnInitialized()
+    {
+        // Create a timer with a 1-second interval
+        timer = new Timer(1000);
+        // Hook up the Elapsed event to the UpdateDate method
+        timer.Elapsed += UpdateDate!;
+        // Start the timer
+        timer.Start();
+    }
+
+    private void UpdateDate(object sender, ElapsedEventArgs e)
+    {
+        // Update the currentDate property with the current date
+        currentDate = DateTime.Now;
+        // Notify Blazor that the component state has changed so it can re-render
+        InvokeAsync(StateHasChanged);
+    }
+
+    // Dispose the timer when the component is disposed
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+
+}
